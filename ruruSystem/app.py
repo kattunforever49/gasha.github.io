@@ -20,14 +20,10 @@ from flask import *
 
 app = Flask(__name__)
 
-@app.route('/Ruru', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def basic():
     to = db.child('ruru').child('point').get()
     return render_template('ruru.html', t=to.val())
-
-@app.route('/')
-def index():
-    return redirect(url_for('basic'))
 
 if __name__ == '__main__':
     app.run(debug=True)
