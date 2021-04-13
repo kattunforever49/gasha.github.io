@@ -1,6 +1,11 @@
 function unityFramework(Module) {
 var Module = typeof Module !== "undefined" ? Module : {};
-;
+Module['updateFoVWebGL'] = Module['updateFoVWebGL'] || {};
+
+Module['updateFoVWebGL'].updateFOV = function(orientation, width, height) {
+	this.updateFOVInternal = this.updateFOVInternal || Module.cwrap("updateFoVWebGL_updateFOV", null, ["string", "number", "number"]);
+	this.updateFOVInternal(orientation, width, height);
+};
 var stackTraceReference = "(^|\\n)(\\s+at\\s+|)jsStackTrace(\\s+\\(|@)([^\\n]+):\\d+:\\d+(\\)|)(\\n|$)";
 var stackTraceReferenceMatch = jsStackTrace().match(new RegExp(stackTraceReference));
 if (stackTraceReferenceMatch) Module.stackTraceRegExp = new RegExp(stackTraceReference.replace("([^\\n]+)", stackTraceReferenceMatch[4].replace(/[\\^${}[\]().*+?|]/g, "\\$&")).replace("jsStackTrace", "[^\\n]+"));
@@ -1310,7 +1315,7 @@ function _emscripten_asm_const_ii(code, a0) {
  return ASM_CONSTS[code](a0);
 }
 STATIC_BASE = GLOBAL_BASE;
-STATICTOP = STATIC_BASE + 3316032;
+STATICTOP = STATIC_BASE + 3316880;
 __ATINIT__.push({
  func: (function() {
   __GLOBAL__sub_I_AccessibilityScriptingClasses_cpp();
@@ -3296,7 +3301,7 @@ __ATINIT__.push({
   ___emscripten_environ_constructor();
  })
 });
-var STATIC_BUMP = 3316032;
+var STATIC_BUMP = 3316880;
 Module["STATIC_BASE"] = STATIC_BASE;
 Module["STATIC_BUMP"] = STATIC_BUMP;
 var tempDoublePtr = STATICTOP;
@@ -14590,6 +14595,27 @@ function _unsetenv(name) {
  }
  return 0;
 }
+function _updateFoVWebGL_play() {
+ if (Module.asmLibraryArg._updateFoVWebGL_play.callUpdateFOV !== undefined) return;
+ Module.asmLibraryArg._updateFoVWebGL_play.callUpdateFOV = function callUpdateFOV() {
+  const orient = (function() {
+   var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+   if (!orientation) orientation = window.orientation === 0 || window.orientation === 180 ? "portrait-primary" : "landscape";
+   return orientation === "portrait-secondary" || orientation === "portrait-primary" ? "portrait" : "landscape";
+  })();
+  const width = orient === "landscape" && screen.width > screen.height ? screen.height : window.innerWidth;
+  const height = width === screen.height ? screen.width : window.innerHeight < screen.height ? screen.height * 2 : window.innerHeight;
+  Module["updateFoVWebGL"].updateFOV(orient, width, height);
+ };
+ Module.asmLibraryArg._updateFoVWebGL_play.callUpdateFOV();
+ window.addEventListener("orientationchange", Module.asmLibraryArg._updateFoVWebGL_play.callUpdateFOV);
+}
+function _updateFoVWebGL_stop() {
+ if (Module.asmLibraryArg._updateFoVWebGL_play.callUpdateFOV !== undefined) {
+  window.removeEventListener("orientationchange", Module.asmLibraryArg._updateFoVWebGL_play.callUpdateFOV);
+  Module.asmLibraryArg._updateFoVWebGL_play.callUpdateFOV = undefined;
+ }
+}
 function _utime(path, times) {
  var time;
  if (times) {
@@ -19887,6 +19913,8 @@ Module.asmLibraryArg = {
  "_time": _time,
  "_tzset": _tzset,
  "_unsetenv": _unsetenv,
+ "_updateFoVWebGL_play": _updateFoVWebGL_play,
+ "_updateFoVWebGL_stop": _updateFoVWebGL_stop,
  "_usleep": _usleep,
  "_utime": _utime,
  "emscriptenWebGLComputeImageSize": emscriptenWebGLComputeImageSize,
@@ -23118,6 +23146,12 @@ asm["_testSetjmp"] = (function() {
  assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
  return real__testSetjmp.apply(null, arguments);
 });
+var real__updateFoVWebGL_updateFOV = asm["_updateFoVWebGL_updateFOV"];
+asm["_updateFoVWebGL_updateFOV"] = (function() {
+ assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
+ assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
+ return real__updateFoVWebGL_updateFOV.apply(null, arguments);
+});
 var real_establishStackSpace = asm["establishStackSpace"];
 asm["establishStackSpace"] = (function() {
  assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
@@ -25850,6 +25884,11 @@ var _testSetjmp = Module["_testSetjmp"] = (function() {
  assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
  assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
  return Module["asm"]["_testSetjmp"].apply(null, arguments);
+});
+var _updateFoVWebGL_updateFOV = Module["_updateFoVWebGL_updateFOV"] = (function() {
+ assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
+ assert(!runtimeExited, "the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)");
+ return Module["asm"]["_updateFoVWebGL_updateFOV"].apply(null, arguments);
 });
 var establishStackSpace = Module["establishStackSpace"] = (function() {
  assert(runtimeInitialized, "you need to wait for the runtime to be ready (e.g. wait for main() to be called)");
